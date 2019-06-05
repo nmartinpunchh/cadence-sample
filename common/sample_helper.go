@@ -125,6 +125,7 @@ func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker
 	}
 }
 
+// QueryWorkflow ..
 func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args ...interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
@@ -144,6 +145,7 @@ func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args .
 	h.Logger.Info("Received query result", zap.Any("Result", result))
 }
 
+// SignalWorkflow ..
 func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {

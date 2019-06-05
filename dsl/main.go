@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/nmartinpunchh/cadence-sample/common"
 	"github.com/pborman/uuid"
-	"github.com/samarabbas/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
 	"gopkg.in/yaml.v2"
