@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/nmartinpunchh/cadence-sample/common"
+	"github.com/nmartinpunchh/cadence-sample/workflow"
 	"github.com/pborman/uuid"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
@@ -21,17 +22,17 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	h.StartWorkers(h.Config.DomainName, workflow.ApplicationName, workerOptions)
 }
 
-func startWorkflow(h *common.SampleHelper, w Workflow) {
+func startWorkflow(h *common.SampleHelper, w workflow.Workflow) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "dsl_" + uuid.New(),
-		TaskList:                        ApplicationName,
+		TaskList:                        workflow.ApplicationName,
 		ExecutionStartToCloseTimeout:    time.Minute,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 	}
-	h.StartWorkflow(workflowOptions, SimpleDSLWorkflow, w)
+	h.StartWorkflow(workflowOptions, workflow.SimpleDSLWorkflow, w)
 }
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 		if err != nil {
 			panic(fmt.Sprintf("failed to load dsl config file %v", err))
 		}
-		var workflow Workflow
+		var workflow workflow.Workflow
 		if err := yaml.Unmarshal(data, &workflow); err != nil {
 			panic(fmt.Sprintf("failed to unmarshal dsl config %v", err))
 		}
