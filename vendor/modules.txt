@@ -2,7 +2,7 @@
 github.com/BurntSushi/toml
 # github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239
 github.com/anmitsu/go-shlex
-# github.com/apache/thrift v0.12.0
+# github.com/apache/thrift v0.0.0-20160514152517-9549b25c7758
 github.com/apache/thrift/lib/go/thrift
 # github.com/beorn7/perks v1.0.0
 github.com/beorn7/perks/quantile
