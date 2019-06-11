@@ -11,17 +11,17 @@ root:
   sequence:
     elements:
      - activity:
-        name: main.sampleActivity1
+        name: github.com/nmartinpunchh/cadence-sample/workflow.sampleActivity1
         arguments:
           - arg1
         result: result1
      - activity:
-        name: main.sampleActivity2
+        name: github.com/nmartinpunchh/cadence-sample/workflow.sampleActivity2
         arguments:
           - result1
         result: result2
      - activity:
-        name: main.sampleActivity3
+        name: github.com/nmartinpunchh/cadence-sample/workflow.sampleActivity3
         arguments:
           - arg2
           - result2

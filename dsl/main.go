@@ -36,9 +36,13 @@ func startWorkflow(h *common.SampleHelper, w workflow.Workflow) {
 }
 
 func main() {
+	// var mode, dslConfig, workflowID, runID, queryType string
 	var mode, dslConfig string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
 	flag.StringVar(&dslConfig, "dslConfig", "cmd/samples/dsl/workflow1.yaml", "dslConfig specify the yaml file for the dsl workflow.")
+	// flag.StringVar(&workflowID, "w", "", "WorkflowID")
+	// flag.StringVar(&runID, "r", "", "RunID")
+	// flag.StringVar(&queryType, "t", "__stack_trace", "QueryType")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -62,5 +66,7 @@ func main() {
 			panic(fmt.Sprintf("failed to unmarshal dsl config %v", err))
 		}
 		startWorkflow(&h, workflow)
+		// case "query":
+		// 	h.QueryWorkflow(workflowID, runID, queryType)
 	}
 }
