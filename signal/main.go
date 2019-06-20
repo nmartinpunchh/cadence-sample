@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/nmartinpunchh/cadence-sample/common"
-	"github.com/nmartinpunchh/cadence-sample/signal/signalworkflow"
+	s "github.com/nmartinpunchh/cadence-sample/signal/workflow"
 	"github.com/pborman/uuid"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
@@ -35,13 +35,14 @@ func startWorkflow(h *common.SampleHelper) {
 		DecisionTaskStartToCloseTimeout: time.Minute,
 		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 	}
-	h.StartWorkflow(workflowOptions, signalworkflow.SignalHandlingWorkflow)
+	h.StartWorkflow(workflowOptions, s.SignalHandlingWorkflow)
 }
 
 func main() {
 	var mode, workflowID, signal string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or query.")
 	flag.StringVar(&workflowID, "w", "", "WorkflowID")
+	// RUN ID
 	flag.StringVar(&signal, "s", "signal_data", "SignalData")
 	flag.Parse()
 
