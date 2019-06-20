@@ -14,6 +14,9 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// SignalName ..
+const SignalName = "trigger-signal"
+
 // This needs to be done as part of a bootstrap step when the process starts.
 // The workers are supposed to be long running.
 func startWorkers(h *common.SampleHelper) {
@@ -37,12 +40,10 @@ func startWorkflow(h *common.SampleHelper, w workflow.Workflow) {
 
 func main() {
 	// var mode, dslConfig, workflowID, runID, queryType string
-	var mode, dslConfig string
+	var mode, dslConfig, workflowID string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker or trigger.")
 	flag.StringVar(&dslConfig, "dslConfig", "cmd/samples/dsl/workflow1.yaml", "dslConfig specify the yaml file for the dsl workflow.")
-	// flag.StringVar(&workflowID, "w", "", "WorkflowID")
-	// flag.StringVar(&runID, "r", "", "RunID")
-	// flag.StringVar(&queryType, "t", "__stack_trace", "QueryType")
+	flag.StringVar(&workflowID, "w", "", "WorkflowID")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -66,7 +67,8 @@ func main() {
 			panic(fmt.Sprintf("failed to unmarshal dsl config %v", err))
 		}
 		startWorkflow(&h, workflow)
-		// case "query":
-		// 	h.QueryWorkflow(workflowID, runID, queryType)
+	case "signal":
+		h.SignalWorkflow(workflowID, SignalName, "WHAT IS DATA?")
+
 	}
 }

@@ -2,9 +2,15 @@ package workflow
 
 import (
 	"fmt"
+
+	"go.uber.org/cadence"
+	"go.uber.org/cadence/workflow"
 )
 
-func sampleActivity1(input []string) (string, error) {
+// SignalName ..
+const SignalName = "trigger-signal"
+
+func sampleActivity1(input []string, ch workflow.Channel) (string, error) {
 	name := "sampleActivity1"
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
@@ -32,4 +38,29 @@ func sampleActivity5(input []string) (string, error) {
 	name := "sampleActivity5"
 	fmt.Printf("Run %s with input %v \n", name, input)
 	return "Result_" + name, nil
+}
+
+func signalActivity() (string, error) {
+
+	var processResult string
+	ch := workflow.GetSignalChannel(ctx, SignalName)
+	for {
+		var signal string
+		if more := ch.Receive(ctx, &signal); !more {
+			fmt.Println("Signal channel closed")
+			return "", cadence.NewCustomError("signal_channel_closed")
+		}
+
+		fmt.Printf("Signal received %v.", signal)
+
+		if signal == "exit" {
+
+			processResult = fmt.Sprintf("Result of %v", signal)
+
+			fmt.Printf("Processed signal: %v, result: %v", signal, processResult)
+			break
+		}
+	}
+
+	return processResult, nil
 }

@@ -7,6 +7,7 @@ import (
 
 	s "go.uber.org/cadence/.gen/go/shared"
 	"go.uber.org/cadence/worker"
+	"go.uber.org/cadence/workflow"
 	"go.uber.org/zap"
 
 	"github.com/uber-go/tally"
@@ -115,6 +116,26 @@ func (h *SampleHelper) StartWorkflow(options client.StartWorkflowOptions, workfl
 	}
 }
 
+// StartWorkflowWithReturn starts a workflow with return
+func (h *SampleHelper) StartWorkflowWithReturn(options client.StartWorkflowOptions, workflow interface{}, args ...interface{}) *workflow.Execution {
+	workflowClient, err := h.Builder.BuildCadenceClient()
+	if err != nil {
+		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
+		panic(err)
+	}
+
+	we, err := workflowClient.StartWorkflow(context.Background(), options, workflow, args...)
+	if err != nil {
+		h.Logger.Error("Failed to create workflow", zap.Error(err))
+		panic("Failed to create workflow.")
+
+	} else {
+		h.Logger.Info("Started Workflow", zap.String("WorkflowID", we.ID), zap.String("RunID", we.RunID))
+	}
+
+	return we
+}
+
 // StartWorkers starts workflow worker and activity worker based on configured options.
 func (h *SampleHelper) StartWorkers(domainName, groupName string, options worker.Options) {
 	worker := worker.New(h.Service, domainName, groupName, options)
@@ -153,6 +174,7 @@ func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{
 		panic(err)
 	}
 
+	// TODO: RUN_ID IS NULL HERE! 😱
 	err = workflowClient.SignalWorkflow(context.Background(), workflowID, "", signal, data)
 	if err != nil {
 		h.Logger.Error("Failed to signal workflow", zap.Error(err))
