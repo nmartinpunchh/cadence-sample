@@ -2,7 +2,6 @@ package workflow
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -12,8 +11,8 @@ import (
 )
 
 var (
-	applicationName = "This is my application Name"
-	signalName      = "This is my signal Name"
+	// applicationName = "This is my application Name"
+	signalName = "This is my signal Name"
 )
 
 /**
@@ -32,19 +31,33 @@ func init() {
 	// no need to register local activities
 }
 
-type conditionAndAction struct {
-	// condition is a function pointer to a local activity
-	condition interface{}
-	// action is a function pointer to a regular activity
-	action interface{}
+func createWait(ctx workflow.Context, data string) {
+	logger := workflow.GetLogger(ctx)
+
+	ch := workflow.GetSignalChannel(ctx, signalName)
+	s := workflow.NewSelector(ctx)
+	var signal string
+	logger.Info("Signal received.", zap.String("signal", signal))
+	timeout := workflow.NewTimer(ctx, time.Minute*30)
+	var signal1 string
+	s.AddFuture(timeout, func(f workflow.Future) {
+	})
+	s.AddReceive(ch, func(c workflow.Channel, more bool) {
+		for {
+			c.Receive(ctx, &signal1)
+			log.Printf("received %s \n", signal1)
+			if signal1 == data {
+				break
+			}
+		}
+	})
+
+	s.Select(ctx)
 }
 
 // SignalHandlingWorkflow is a workflow that waits on signal and then sends that signal to be processed by a child workflow.
 func SignalHandlingWorkflow(ctx workflow.Context) error {
-	logger := workflow.GetLogger(ctx)
-	ch := workflow.GetSignalChannel(ctx, signalName)
-	s := workflow.NewSelector(ctx)
-	var signal string
+	// logger := workflow.GetLogger(ctx)
 
 	ao := workflow.ActivityOptions{
 		ScheduleToStartTimeout: time.Minute,
@@ -52,38 +65,23 @@ func SignalHandlingWorkflow(ctx workflow.Context) error {
 		HeartbeatTimeout:       time.Second * 20,
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
-	logger.Info("Signal received.", zap.String("signal", signal))
 
-	var nameResult string
-	err := workflow.ExecuteActivity(ctx, activityForCondition0, ch, s, ctx).Get(ctx, &nameResult)
-	if err != nil {
-		logger.Error("execute activity failed", zap.Error(err))
-		return err
-	}
+	createWait(ctx, "1")
+	log.Println("After 1")
+
+	createWait(ctx, "2")
+	log.Println("After 1")
+
+	createWait(ctx, "3")
+	log.Println("After 3")
 
 	return nil
 }
 
-func activityForCondition0(ctx context.Context, ch workflow.Channel, s workflow.Selector, wctx workflow.Context) (string, error) {
-	activity.GetLogger(ctx).Info("process 0")
-	timeout := workflow.NewTimer(wctx, time.Minute*30)
-	var signal1 string
-	s.AddFuture(timeout, func(f workflow.Future) {
-	})
-	s.AddReceive(ch, func(c workflow.Channel, more bool) {
-		for {
-			c.Receive(wctx, signal1)
-			log.Printf("received %s \n", signal1)
-			if signal1 == "1" {
-				break
-			}
-		}
+func activityForCondition0(ctx context.Context) (string, error) {
 
-	})
-
-	// s.Select(ctx)
-
-	return fmt.Sprintf("processed %s", signal1), nil
+	// return fmt.Sprintf("processed %s", signal1), nil
+	return "", nil
 }
 
 func activityForCondition1(ctx context.Context, ch workflow.Channel, s workflow.Selector) (string, error) {
