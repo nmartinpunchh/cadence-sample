@@ -59,18 +59,18 @@ func createWait(ctx workflow.Context, data string) {
 func SignalHandlingWorkflow(ctx workflow.Context) error {
 	// logger := workflow.GetLogger(ctx)
 
-	ao := workflow.ActivityOptions{
-		ScheduleToStartTimeout: time.Minute,
-		StartToCloseTimeout:    time.Minute,
-		HeartbeatTimeout:       time.Second * 20,
-	}
-	ctx = workflow.WithActivityOptions(ctx, ao)
+	// ao := workflow.ActivityOptions{
+	// 	ScheduleToStartTimeout: time.Minute,
+	// 	StartToCloseTimeout:    time.Minute,
+	// 	HeartbeatTimeout:       time.Second * 20,
+	// }
+	// ctx = workflow.WithActivityOptions(ctx, ao)
 
 	createWait(ctx, "1")
 	log.Println("After 1")
 
 	createWait(ctx, "2")
-	log.Println("After 1")
+	log.Println("After 2")
 
 	createWait(ctx, "3")
 	log.Println("After 3")

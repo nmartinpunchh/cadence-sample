@@ -167,7 +167,7 @@ func (h *SampleHelper) QueryWorkflow(workflowID, runID, queryType string, args .
 }
 
 // SignalWorkflow ..
-func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{}) {
+func (h *SampleHelper) SignalWorkflow(workflowID, signal, runID string, data interface{}) {
 	workflowClient, err := h.Builder.BuildCadenceClient()
 	if err != nil {
 		h.Logger.Error("Failed to build cadence client.", zap.Error(err))
@@ -175,7 +175,7 @@ func (h *SampleHelper) SignalWorkflow(workflowID, signal string, data interface{
 	}
 
 	// TODO: RUN_ID IS NULL HERE! 😱
-	err = workflowClient.SignalWorkflow(context.Background(), workflowID, "", signal, data)
+	err = workflowClient.SignalWorkflow(context.Background(), workflowID, runID, signal, data)
 	if err != nil {
 		h.Logger.Error("Failed to signal workflow", zap.Error(err))
 		panic("Failed to signal workflow.")

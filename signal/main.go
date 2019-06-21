@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	ApplicationName string = "This is my application Name"
-	SignalName      string = "This is my signal Name"
+	applicationName string = "This is my application Name"
+	signalName      string = "This is my signal Name"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -24,13 +24,13 @@ func startWorkers(h *common.SampleHelper) {
 		MetricsScope: h.Scope,
 		Logger:       h.Logger,
 	}
-	h.StartWorkers(h.Config.DomainName, ApplicationName, workerOptions)
+	h.StartWorkers(h.Config.DomainName, applicationName, workerOptions)
 }
 
 func startWorkflow(h *common.SampleHelper) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "localactivity_" + uuid.New(),
-		TaskList:                        ApplicationName,
+		TaskList:                        applicationName,
 		ExecutionStartToCloseTimeout:    time.Minute * 3,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
@@ -39,11 +39,11 @@ func startWorkflow(h *common.SampleHelper) {
 }
 
 func main() {
-	var mode, workflowID, signal string
+	var mode, workflowID, signal, runID string
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or query.")
 	flag.StringVar(&workflowID, "w", "", "WorkflowID")
-	// RUN ID
 	flag.StringVar(&signal, "s", "signal_data", "SignalData")
+	flag.StringVar(&runID, "r", "", "RunID")
 	flag.Parse()
 
 	var h common.SampleHelper
@@ -59,6 +59,6 @@ func main() {
 	case "trigger":
 		startWorkflow(&h)
 	case "signal":
-		h.SignalWorkflow(workflowID, SignalName, signal)
+		h.SignalWorkflow(workflowID, signalName, runID, signal)
 	}
 }
