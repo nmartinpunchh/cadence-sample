@@ -31,7 +31,7 @@ func startWorkflow(h *common.SampleHelper) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "localactivity_" + uuid.New(),
 		TaskList:                        applicationName,
-		ExecutionStartToCloseTimeout:    time.Minute * 3,
+		ExecutionStartToCloseTimeout:    time.Hours * 3,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 	}
