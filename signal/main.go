@@ -13,7 +13,6 @@ import (
 
 var (
 	applicationName = "This is my application Name"
-	signalName      = "This is my signal Name"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -39,10 +38,11 @@ func startWorkflow(h *common.SampleHelper) {
 }
 
 func main() {
-	var mode, workflowID, signal, runID string
-	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or query.")
+	var mode, workflowID, signal, runID, signalName string
+	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or signal")
 	flag.StringVar(&workflowID, "w", "", "WorkflowID")
 	flag.StringVar(&signal, "s", "signal_data", "SignalData")
+	flag.StringVar(&signal, "n", "", "SignalName")
 	flag.StringVar(&runID, "r", "", "RunID")
 	flag.Parse()
 

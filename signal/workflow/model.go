@@ -10,10 +10,10 @@ type (
 		// type is a restricted keyword
 		nodeType string
 		args     []string
-		next     *node
+		next     *child
 	}
 
-	// child struct {
-	// 	next *node
-	// }
+	child struct {
+		next *node
+	}
 )

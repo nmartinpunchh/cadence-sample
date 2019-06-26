@@ -7,18 +7,11 @@ import (
 
 	"go.uber.org/cadence/activity"
 	"go.uber.org/cadence/workflow"
-	"go.uber.org/zap"
-)
-
-var (
-	// applicationName = "This is my application Name"
-	signalName = "This is my signal Name"
 )
 
 /**
  * Sample workflow that uses local activities.
  */
-
 // This is registration process where you register all your workflows
 // and activity function handlers.
 func init() {
@@ -31,27 +24,23 @@ func init() {
 	// no need to register local activities
 }
 
-func createWait(ctx workflow.Context, data string, timeout time.Duration) {
-	logger := workflow.GetLogger(ctx)
+func createWait(ctx workflow.Context, signalName string, timeout time.Duration) {
+	// logger := workflow.GetLogger(ctx)
 
 	ch := workflow.GetSignalChannel(ctx, signalName)
 	s := workflow.NewSelector(ctx)
 
-	var signal string
-	logger.Info("Signal received.", zap.String("signal", signal))
 	timeoutFuture := workflow.NewTimer(ctx, timeout)
 	var signal1 string
 
 	s.AddFuture(timeoutFuture, func(f workflow.Future) {
+		//handle timeout here
 	})
 	s.AddReceive(ch, func(c workflow.Channel, more bool) {
-		for {
-			c.Receive(ctx, &signal1)
-			log.Printf("received %s \n", signal1)
-			if signal1 == data {
-				break
-			}
-		}
+		// for {
+		c.Receive(ctx, &signal1)
+		log.Printf("received data %s from %s \n", signal1, signalName)
+		// }
 	})
 
 	s.Select(ctx)
@@ -120,14 +109,14 @@ func createWfModel() customWorkflow {
 			nodeType: "wait",
 			// For nodeType == wait. 1st arg is value 2nd is timeout
 			args: []string{"1", "30m"},
-			next: &node{
+			next: &child{
 				next: &node{
 					nodeType: "action",
 					args:     []string{},
-					next: &node{
+					next: &child{
 						next: &node{
 							nodeType: "wait",
-							args:     []string{"2", "10m"},
+							args:     []string{"1", "30m"},
 							next:     nil,
 						},
 					},
