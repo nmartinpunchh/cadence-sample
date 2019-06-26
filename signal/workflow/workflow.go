@@ -36,10 +36,12 @@ func createWait(ctx workflow.Context, data string, timeout time.Duration) {
 
 	ch := workflow.GetSignalChannel(ctx, signalName)
 	s := workflow.NewSelector(ctx)
+
 	var signal string
 	logger.Info("Signal received.", zap.String("signal", signal))
 	timeoutFuture := workflow.NewTimer(ctx, timeout)
 	var signal1 string
+
 	s.AddFuture(timeoutFuture, func(f workflow.Future) {
 	})
 	s.AddReceive(ch, func(c workflow.Channel, more bool) {
@@ -55,7 +57,7 @@ func createWait(ctx workflow.Context, data string, timeout time.Duration) {
 	s.Select(ctx)
 }
 
-// SignalHandlingWorkflow is a workflow that waits on signal and then sends that signal to be processed by a child workflow.
+// SignalHandlingWorkflow is a workflow that waits on signal and then sends that signal to be processed by a node workflow.
 func SignalHandlingWorkflow(ctx workflow.Context) error {
 	// logger := workflow.GetLogger(ctx)
 	ao := workflow.ActivityOptions{
@@ -66,16 +68,22 @@ func SignalHandlingWorkflow(ctx workflow.Context) error {
 	ctx = workflow.WithActivityOptions(ctx, ao)
 	wf := createWfModel()
 
-	nextNode := &wf.root
+	var nextNode *node = &wf.root
 
-	// Not the best, I'm sure there's a better way ..
-	for ok := true; ok; ok = nextNode != nil {
+	for {
 		switch nextNode.nodeType {
 		case "wait":
+			log.Println("I'm in wait case")
 			timeout, _ := time.ParseDuration(nextNode.args[1])
+			// I should be waiting here...
 			createWait(ctx, nextNode.args[0], timeout)
 		case "action":
 			log.Println("Parsed action node type")
+			//workflow.ExecuteActivity("NAMESPACE")
+		}
+
+		if nextNode.next == nil {
+			break
 		}
 
 		nextNode = nextNode.next.next
@@ -112,11 +120,17 @@ func createWfModel() customWorkflow {
 			nodeType: "wait",
 			// For nodeType == wait. 1st arg is value 2nd is timeout
 			args: []string{"1", "30m"},
-			next: &child{
+			next: &node{
 				next: &node{
-					nodeType: "wait",
-					args:     []string{"2", "10"},
-					next:     nil,
+					nodeType: "action",
+					args:     []string{},
+					next: &node{
+						next: &node{
+							nodeType: "wait",
+							args:     []string{"2", "10m"},
+							next:     nil,
+						},
+					},
 				},
 			},
 		},

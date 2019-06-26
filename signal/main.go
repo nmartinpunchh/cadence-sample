@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	applicationName string = "This is my application Name"
-	signalName      string = "This is my signal Name"
+	applicationName = "This is my application Name"
+	signalName      = "This is my signal Name"
 )
 
 // This needs to be done as part of a bootstrap step when the process starts.
@@ -31,7 +31,7 @@ func startWorkflow(h *common.SampleHelper) {
 	workflowOptions := client.StartWorkflowOptions{
 		ID:                              "localactivity_" + uuid.New(),
 		TaskList:                        applicationName,
-		ExecutionStartToCloseTimeout:    time.Hours * 3,
+		ExecutionStartToCloseTimeout:    time.Hour * 3,
 		DecisionTaskStartToCloseTimeout: time.Minute,
 		WorkflowIDReusePolicy:           client.WorkflowIDReusePolicyAllowDuplicate,
 	}
