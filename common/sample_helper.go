@@ -174,7 +174,6 @@ func (h *SampleHelper) SignalWorkflow(workflowID, signal, runID string, data int
 		panic(err)
 	}
 
-	// TODO: RUN_ID IS NULL HERE! 😱
 	err = workflowClient.SignalWorkflow(context.Background(), workflowID, runID, signal, data)
 	if err != nil {
 		h.Logger.Error("Failed to signal workflow", zap.Error(err))

@@ -9,19 +9,11 @@ import (
 	"go.uber.org/cadence/workflow"
 )
 
-/**
- * Sample workflow that uses local activities.
- */
-// This is registration process where you register all your workflows
-// and activity function handlers.
 func init() {
 	workflow.Register(SignalHandlingWorkflow)
 
 	activity.Register(activityForCondition0)
-	activity.Register(activityForCondition1)
-	activity.Register(activityForCondition2)
 
-	// no need to register local activities
 }
 
 func createWait(ctx workflow.Context, signalName string, timeout time.Duration) {
@@ -37,10 +29,8 @@ func createWait(ctx workflow.Context, signalName string, timeout time.Duration) 
 		//handle timeout here
 	})
 	s.AddReceive(ch, func(c workflow.Channel, more bool) {
-		// for {
 		c.Receive(ctx, &signal1)
 		log.Printf("received data %s from %s \n", signal1, signalName)
-		// }
 	})
 
 	s.Select(ctx)
@@ -87,20 +77,6 @@ func activityForCondition0(ctx context.Context) (string, error) {
 	return "", nil
 }
 
-func activityForCondition1(ctx context.Context, ch workflow.Channel, s workflow.Selector) (string, error) {
-	activity.GetLogger(ctx).Info("process 1")
-	// some real processing logic goes here
-	time.Sleep(time.Second * 2)
-	return "processed_1", nil
-}
-
-func activityForCondition2(ctx context.Context, ch workflow.Channel, s workflow.Selector) (string, error) {
-	activity.GetLogger(ctx).Info("process 2")
-	// some real processing logic goes here
-	time.Sleep(time.Second * 3)
-	return "processed_2", nil
-}
-
 func createWfModel() customWorkflow {
 
 	wf := customWorkflow{
@@ -108,7 +84,7 @@ func createWfModel() customWorkflow {
 		root: node{
 			nodeType: "wait",
 			// For nodeType == wait. 1st arg is value 2nd is timeout
-			args: []string{"1", "30m"},
+			args: []string{"1", "15m"},
 			next: &child{
 				next: &node{
 					nodeType: "action",
@@ -116,7 +92,7 @@ func createWfModel() customWorkflow {
 					next: &child{
 						next: &node{
 							nodeType: "wait",
-							args:     []string{"1", "30m"},
+							args:     []string{"2", "10m"},
 							next:     nil,
 						},
 					},

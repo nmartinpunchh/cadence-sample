@@ -42,7 +42,7 @@ func main() {
 	flag.StringVar(&mode, "m", "trigger", "Mode is worker, trigger or signal")
 	flag.StringVar(&workflowID, "w", "", "WorkflowID")
 	flag.StringVar(&signal, "s", "signal_data", "SignalData")
-	flag.StringVar(&signal, "n", "", "SignalName")
+	flag.StringVar(&signalName, "n", "", "SignalName")
 	flag.StringVar(&runID, "r", "", "RunID")
 	flag.Parse()
 
